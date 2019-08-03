@@ -45,7 +45,7 @@ namespace Application.Interations
                 if (methodWithResponse.Contains(request.Method))
                     return restResp;
                 else
-                    Console.WriteLine("Changes uploaded successfully!");
+                    Common.ShowSuccesInputMessage("Changes submitted successfully!");
             }
             return null;
         }
@@ -114,12 +114,24 @@ namespace Application.Interations
                 || restResp.StatusCode == HttpStatusCode.Created
                 || restResp.StatusCode == HttpStatusCode.NoContent
                 ))
-                throw new Exception("Something gone wrong. We are very sorry :(");
+                Console.WriteLine(restResp.StatusDescription);
         }
 
         public static T DeserializeResponse<T>(IRestResponse response) where T : class
         {
             return JsonConvert.DeserializeObject<T>(response.Content);
+        }
+
+        public static void PreviewRequest(object obj)
+        {
+            Console.Clear();
+            var json = JsonConvert.SerializeObject(obj);
+
+            Console.WriteLine("So, this is our request to the API!");
+
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine(json);
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
         }
     }
 }

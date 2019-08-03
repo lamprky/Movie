@@ -38,7 +38,7 @@ namespace Application.Interations
 
                 input = Common.GetYesOrNoAnswer("You may want to preview them, isn't it?");
                 if (input == Common.Yes)
-                    PreviewTranslations(model);
+                    Preview(model);
 
                 input = Common.GetYesOrNoAnswer("It is something make you feel unhappy with? Do you want to apply changes?");
                 if (input == Common.Yes)
@@ -53,6 +53,7 @@ namespace Application.Interations
             }
         }
 
+        #region Create
         private static void CreateTranslations(IGeneralViewModel model)
         {
             Console.WriteLine("\nOkey, let's go!");
@@ -77,7 +78,7 @@ namespace Application.Interations
             }
 
             Console.WriteLine("\nOkey, these are the translations!");
-            PreviewTranslations(model);
+            Preview(model);
         }
 
         private static void CreateTranslation(IGeneralViewModel model)
@@ -85,13 +86,6 @@ namespace Application.Interations
             var translationParts = GetTranslationParts();
             int language = GetLanguage(model, null);
             AddTranslation(model, translationParts, language);
-        }
-
-        private static void UpdateTranslation(IGeneralViewModel model, Guid key)
-        {
-            var translationParts = GetTranslationParts();
-            int language = GetLanguage(model, key);
-            UpdateTranslation(model, key, translationParts, language);
         }
 
         private static void AddTranslation(IGeneralViewModel model, string[] translationParts, int language)
@@ -109,43 +103,9 @@ namespace Application.Interations
             Common.ShowSuccesInputMessage("Cool! Your translation saved temporarily!");
         }
 
-        private static void UpdateTranslation(IGeneralViewModel model, Guid key, string[] translationParts, int language)
-        {
-            var translation = new DetailsViewModel
-            {
-                ID = key,
-                Title = translationParts[0],
-                Name = translationParts[1],
-                Description = translationParts[2],
-                LanguageId = Languages[OrderedLanguages[language]]
-            };
+        #endregion
 
-            var pos = model.Details.IndexOf(model.Details.First(x => x.ID == key));
-            model.Details[pos] = translation;
-
-            Common.ShowSuccesInputMessage("Cool! Your translation saved temporarily!");
-        }
-
-        private static string[] GetTranslationParts()
-        {
-            Console.WriteLine("We are listening!");
-            string[] translationParts = new string[] { };
-            bool isValid = false;
-
-            while (!isValid)
-            {
-                string input = Common.GetUserInput();
-                translationParts = input.Split(",");
-
-                if (translationParts.Count() != 3)
-                    Common.ShowWrongInputMessage("");
-                else
-                    isValid = true;
-            }
-
-            return translationParts;
-        }
-
+        #region Update
         private static void UpdateTranslations(IGeneralViewModel model)
         {
             var input = Common.Yes;
@@ -173,7 +133,53 @@ namespace Application.Interations
             }
 
             Console.WriteLine("\nOkey, these are the translations!");
-            PreviewTranslations(model);
+            Preview(model);
+        }
+
+        private static void UpdateTranslation(IGeneralViewModel model, Guid key)
+        {
+            var translationParts = GetTranslationParts();
+            int language = GetLanguage(model, key);
+            UpdateTranslation(model, key, translationParts, language);
+        }
+
+        private static void UpdateTranslation(IGeneralViewModel model, Guid key, string[] translationParts, int language)
+        {
+            var translation = new DetailsViewModel
+            {
+                ID = key,
+                Title = translationParts[0],
+                Name = translationParts[1],
+                Description = translationParts[2],
+                LanguageId = Languages[OrderedLanguages[language]]
+            };
+
+            var pos = model.Details.IndexOf(model.Details.First(x => x.ID == key));
+            model.Details[pos] = translation;
+
+            Common.ShowSuccesInputMessage("Cool! Your translation saved temporarily!");
+        }
+
+        #endregion
+
+        private static string[] GetTranslationParts()
+        {
+            Console.WriteLine("We are listening!");
+            string[] translationParts = new string[] { };
+            bool isValid = false;
+
+            while (!isValid)
+            {
+                string input = Common.GetUserInput();
+                translationParts = input.Split(",");
+
+                if (translationParts.Count() != 3)
+                    Common.ShowWrongInputMessage("");
+                else
+                    isValid = true;
+            }
+
+            return translationParts;
         }
 
         private static Guid? GetKeyToModify(IGeneralViewModel model)
@@ -194,7 +200,7 @@ namespace Application.Interations
                 {
                     var input = Common.GetYesOrNoAnswer("You may want to preview them, isn't it?");
                     if (input == Common.Yes)
-                        PreviewTranslations(model);
+                        Preview(model);
                     else
                         break;
                 }
@@ -203,7 +209,7 @@ namespace Application.Interations
             return key;
         }
 
-        public static void PreviewTranslations(IGeneralViewModel model)
+        public static void Preview(IGeneralViewModel model)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine("Translations: ");

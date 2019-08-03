@@ -9,70 +9,48 @@ namespace Application.Interations
 {
     public static class ContributorType
     {
-        public static ContributorTypeViewModel CreateContributorType()
+        public static ContributorTypeViewModel Create()
         {
             Console.Clear();
+            Console.WriteLine("Let's handle a contributor type! \n");
+
             ContributorTypeViewModel model = new ContributorTypeViewModel();
 
             Console.WriteLine("All we need for creating a contributor type is to give us some details! In some languages!");
+            ContributorTypeOptions(ref model);
 
-            var input = Common.GetYesOrNoAnswer("Are you ready?");
+            return model;
+        }
+
+        public static ContributorTypeViewModel Update()
+        {
+            Console.Clear();
+            Console.WriteLine("Let's handle a contributor type! \n");
+
+            ContributorTypeViewModel model = Common.GetRecordForUpdate<ContributorTypeViewModel>("CT");
+            if (model == null)
+                return null;
+
+            Console.WriteLine("Okey, we are ready!");
+            ContributorTypeOptions(ref model);
+
+            return model;
+        }
+
+        private static void ContributorTypeOptions(ref ContributorTypeViewModel model)
+        {
+            string input = Common.GetYesOrNoAnswer("Do you like to add or modify translations?");
+
             if (input == Common.Yes)
-            {
                 Translation.CreateOrUpdateTranslations(model);
-                PreviewRequest(model);
-            }
             else
-                return null;
-            return model;
-        }
-
-        public static ContributorTypeViewModel UpdateContributorType()
-        {
-            Console.Clear();
-            ContributorTypeViewModel model = new ContributorTypeViewModel();
-
-            Console.WriteLine("Ok, let's update a contributor type! But to update, we firstly should know which contributor type.");
-
-            var entity = "CT";
-            var method = "GETID";
-            UserAction action = new UserAction(method, entity);
-
-            RestRequest request = API.PrepareRequest(action);
-            if (request != null)
             {
-                Console.WriteLine("Take a breathe till we get the details!");
-                var resp = API.GetResponse(action, request);
-                List<ContributorTypeViewModel> contributorTypes = Common.ToViewModel<ContributorTypeViewModel>(method, resp);
-
-                model = contributorTypes[0];
-                string input = Common.GetYesOrNoAnswer("Okey, we are ready! Do you like to modify or add any translations?");
-                if (input == Common.Yes)
-                {
-                    Translation.CreateOrUpdateTranslations(model);
-                    PreviewRequest(model);
-                }
-                else
-                    return null;
+                model = null;
+                Console.WriteLine("There is nothing else to modify in this entity. You may probably decide to make some other action!");
             }
-            else
-                return null;
-            return model;
         }
 
-        private static void PreviewRequest(object obj)
-        {
-            Console.Clear();
-            var json = JsonConvert.SerializeObject(obj);
-
-            Console.WriteLine("So, this is our request to the API!");
-
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine(json);
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-        }
-
-        public static void PreviewResponse(string method, List<ContributorTypeViewModel> contributorTypes)
+        public static void Preview(List<ContributorTypeViewModel> contributorTypes)
         {
             Console.WriteLine("\nLet's see how api responsed back!");
 
@@ -85,7 +63,7 @@ namespace Application.Interations
                 Console.WriteLine(String.Format("{0,-10} | {1,-10}", i + ". ", ct.ID));
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
 
-                Translation.PreviewTranslations(ct);
+                Translation.Preview(ct);
                 Console.WriteLine("");
                 i++;
             }

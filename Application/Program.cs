@@ -30,12 +30,14 @@ namespace Application
                 RestRequest request = API.PrepareRequest(action);
                 if (request != null)
                 {
+                    //if (action.Method == "POST" || action.Method == "PUT")
+                    //    API.PreviewRequest(request);
                     IRestResponse resp = API.GetResponse(action, request);
                     if (resp != null)
                         Common.ShowResult[action.Entity](action.Method, resp);
                 }
 
-                Console.WriteLine(@"Let's execute a new action now! Remember: You can use keyword " + terminateKeyword + " to complete the demostration!");
+                Console.WriteLine("\nLet's execute a new action now! Remember: You can use keyword " + terminateKeyword + " to complete the demostration!");
                 read = Common.GetUserInput();
             }
 
@@ -72,7 +74,9 @@ namespace Application
             while (!isValid)
             {
                 commands = input.ToUpper().Split(" ");
-                if (commands.Count() == 2 && API.GetMethod.ContainsKey(commands[1]) && Common.GetPostEntity.ContainsKey(commands[0]))
+                if (commands.Count() == 2
+                    && API.GetMethod.ContainsKey(commands[1])
+                    && Common.GetPostEntity.ContainsKey(commands[0]))
                     isValid = true;
                 else
                 {

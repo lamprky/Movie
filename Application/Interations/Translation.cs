@@ -24,7 +24,7 @@ namespace Application.Interations
             { "Spanish", Guid.Parse("B6F6270D-F435-4BD4-8723-94B7659B0505") },
         };
 
-        public static void CreateOrUpdateTranslations(IGeneralViewModel model)
+        public static void CreateOrUpdateTranslations(List<DetailsViewModel> details)
         {
             Console.Clear();
 
@@ -32,63 +32,64 @@ namespace Application.Interations
             Console.WriteLine("Let's handle our translations! \n");
             Console.WriteLine("We need at least 3 translations, but feel free to add as many as you wish!");
 
-            if (model.Details.Count > 0)
+            if (details.Count > 0)
             {
                 Console.WriteLine("The good news is that it's seems that we have already some translations! Less job for you!");
 
                 input = Common.GetYesOrNoAnswer("You may want to preview them, isn't it?");
                 if (input == Common.Yes)
-                    Preview(model);
+                    Preview(details);
 
                 input = Common.GetYesOrNoAnswer("It is something make you feel unhappy with? Do you want to apply changes?");
                 if (input == Common.Yes)
-                    UpdateTranslations(model);
+                    UpdateTranslations(details);
             }
 
-            if (model.Details.Count < Languages.Count)
+            if (details.Count < Languages.Count)
             {
                 input = Common.GetYesOrNoAnswer("Do you want to continue by adding new translations?");
                 if (input == Common.Yes)
-                    CreateTranslations(model);
+                    CreateTranslations(details);
             }
         }
 
         #region Create
-        private static void CreateTranslations(IGeneralViewModel model)
+
+        private static void CreateTranslations(List<DetailsViewModel> details)
         {
             Console.WriteLine("\nOkey, let's go!");
             Console.WriteLine("A translation need to be a combination of a title, a name and a description, separated by the comma character!");
 
             string input = Common.Yes;
-            while (model.Details.Count() <= 2 || input == Common.Yes)
+            while (details.Count() <= 2 || input == Common.Yes)
             {
-                if (model.Details.Count() > 0)
+                if (details.Count() > 0)
                     Console.WriteLine("\nRemember: We need a title, a name and a description. Comma separated! Order is important!");
 
-                CreateTranslation(model);
+                CreateTranslation(details);
 
-                if (model.Details.Count() == 3)
+                if (details.Count() == 3)
                     Console.WriteLine("Wow! The minimum requirement just fullfilled!");
 
-                if (model.Details.Count() >= 3 && model.Details.Count < Languages.Count())
+                if (details.Count() >= 3 && details.Count < Languages.Count())
                     input = Common.GetYesOrNoAnswer("Do you want to continue adding?");
 
-                if (model.Details.Count == Languages.Count())
+                if (details.Count == Languages.Count())
                     input = Common.No;
             }
 
             Console.WriteLine("\nOkey, these are the translations!");
-            Preview(model);
+            Preview(details);
         }
 
-        private static void CreateTranslation(IGeneralViewModel model)
+        private static void CreateTranslation(List<DetailsViewModel> details)
         {
             var translationParts = GetTranslationParts();
-            int language = GetLanguage(model, null);
-            AddTranslation(model, translationParts, language);
+            int language = GetLanguage(details, null);
+            AddTranslation(details, translationParts, language);
         }
 
-        private static void AddTranslation(IGeneralViewModel model, string[] translationParts, int language)
+        private static void AddTranslation(List<DetailsViewModel> details, string[] translationParts, int language)
         {
             var translation = new DetailsViewModel
             {
@@ -98,31 +99,32 @@ namespace Application.Interations
                 Description = translationParts[2],
                 LanguageId = Languages[OrderedLanguages[language]]
             };
-            model.Details.Add(translation);
+            details.Add(translation);
 
             Common.ShowSuccesInputMessage("Cool! Your translation saved temporarily!");
         }
 
-        #endregion
+        #endregion Create
 
         #region Update
-        private static void UpdateTranslations(IGeneralViewModel model)
+
+        private static void UpdateTranslations(List<DetailsViewModel> details)
         {
             var input = Common.Yes;
             while (input == Common.Yes)
             {
-                var key = GetKeyToModify(model);
+                var key = GetKeyToModify(details);
                 if (key != null)
                 {
                     Console.WriteLine("Ok, to edit a translation you should give us the new content!");
                     Console.WriteLine("A translation need to be a combination of a title, a name and a description, separated by the comma character!");
 
-                    UpdateTranslation(model, key.Value);
+                    UpdateTranslation(details, key.Value);
 
-                    if (model.Details.Count < Languages.Count())
+                    if (details.Count < Languages.Count())
                         input = Common.GetYesOrNoAnswer("Do you want to continue modifying the existing translations?");
 
-                    if (model.Details.Count == Languages.Count())
+                    if (details.Count == Languages.Count())
                         input = Common.No;
                 }
                 else
@@ -133,17 +135,17 @@ namespace Application.Interations
             }
 
             Console.WriteLine("\nOkey, these are the translations!");
-            Preview(model);
+            Preview(details);
         }
 
-        private static void UpdateTranslation(IGeneralViewModel model, Guid key)
+        private static void UpdateTranslation(List<DetailsViewModel> details, Guid key)
         {
             var translationParts = GetTranslationParts();
-            int language = GetLanguage(model, key);
-            UpdateTranslation(model, key, translationParts, language);
+            int language = GetLanguage(details, key);
+            UpdateTranslation(details, key, translationParts, language);
         }
 
-        private static void UpdateTranslation(IGeneralViewModel model, Guid key, string[] translationParts, int language)
+        private static void UpdateTranslation(List<DetailsViewModel> details, Guid key, string[] translationParts, int language)
         {
             var translation = new DetailsViewModel
             {
@@ -154,13 +156,13 @@ namespace Application.Interations
                 LanguageId = Languages[OrderedLanguages[language]]
             };
 
-            var pos = model.Details.IndexOf(model.Details.First(x => x.ID == key));
-            model.Details[pos] = translation;
+            var pos = details.IndexOf(details.First(x => x.ID == key));
+            details[pos] = translation;
 
             Common.ShowSuccesInputMessage("Cool! Your translation saved temporarily!");
         }
 
-        #endregion
+        #endregion Update
 
         private static string[] GetTranslationParts()
         {
@@ -182,7 +184,7 @@ namespace Application.Interations
             return translationParts;
         }
 
-        private static Guid? GetKeyToModify(IGeneralViewModel model)
+        private static Guid? GetKeyToModify(List<DetailsViewModel> details)
         {
             Guid? key = Guid.Empty;
             bool isValid = false;
@@ -191,7 +193,7 @@ namespace Application.Interations
                 key = Common.GetKey();
                 if (key != null)
                 {
-                    if (model.Details.Select(x => x.ID).Contains(key))
+                    if (details.Select(x => x.ID).Contains(key))
                         isValid = true;
                     else
                         Common.ShowWrongInputMessage("");
@@ -200,7 +202,7 @@ namespace Application.Interations
                 {
                     var input = Common.GetYesOrNoAnswer("You may want to preview them, isn't it?");
                     if (input == Common.Yes)
-                        Preview(model);
+                        Preview(details);
                     else
                         break;
                 }
@@ -209,14 +211,14 @@ namespace Application.Interations
             return key;
         }
 
-        public static void Preview(IGeneralViewModel model)
+        public static void Preview(List<DetailsViewModel> details)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.WriteLine("Translations: ");
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
 
             int i = 1;
-            foreach (var tr in model.Details)
+            foreach (var tr in details)
             {
                 Console.WriteLine(String.Format("{0,-10} | {1,-10} | {2,-10}| {3,-10} | {4,-10} | {5,-10}",
                     i + ". ", tr.ID, tr.Title, tr.Name, tr.Description, Languages.FirstOrDefault(x => x.Value == tr.LanguageId).Key));
@@ -225,10 +227,10 @@ namespace Application.Interations
             Console.ForegroundColor = ConsoleColor.DarkYellow;
         }
 
-        private static int GetLanguage(IGeneralViewModel model, Guid? key)
+        private static int GetLanguage(List<DetailsViewModel> details, Guid? key)
         {
-            var currentLanguage = (key == null) ? null : model.Details.SingleOrDefault(x => x.ID == key)?.LanguageId;
-            var existingTranslations = model.Details.Select(x => x.LanguageId).ToList();
+            var currentLanguage = (key == null) ? null : details.SingleOrDefault(x => x.ID == key)?.LanguageId;
+            var existingTranslations = details.Select(x => x.LanguageId).ToList();
             var languagesToShow = Languages.Where(x => !existingTranslations.Contains(x.Value) || (currentLanguage != null && x.Value == currentLanguage)).ToList()
                 .SelectMany(x => OrderedLanguages.Where(y => y.Value == x.Key).ToList()).ToList();
 

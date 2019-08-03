@@ -99,17 +99,17 @@ namespace Application.Interations
         public static Dictionary<string, Func<object>> GetPostEntity = new Dictionary<string, Func<object>>
         {
             { "CT", () => {  return ContributorType.Create();  } },
-            { "C", () => {  return Contributor.Create();  } },
-            //{ "G", (id, translations) => CreateContributorType(id, translations)},
-            //{ "M", (id, translations) => CreateContributorType(id, translations)},
+            { "C", () =>  {  return Contributor.Create();  } },
+            { "G", () =>  {  return Genre.Create();  } },
+            { "M", () =>  {  return Movie.Create();  } },
         };
 
         public static Dictionary<string, Func<object>> GetPutEntity = new Dictionary<string, Func<object>>
         {
             { "CT", () => {  return ContributorType.Update();  } },
             { "C",  () => {  return Contributor.Update();  } },
-               //{ "G", (id, translations) => CreateContributorType(id, translations)},
-               //{ "M", (id, translations) => CreateContributorType(id, translations)},
+            { "G",  () => {  return Genre.Update();  } },
+            { "M",  () => {  return Movie.Update();  } },
            };
 
         public static Dictionary<string, Action<string, IRestResponse>> ShowResult =
@@ -117,8 +117,8 @@ namespace Application.Interations
         {
             { "CT", (method, obj) => ContributorType.Preview(ToViewModel<ContributorTypeViewModel>(method, obj))},
             { "C",  (method, obj) => Contributor.Preview(ToViewModel<ContributorViewModel>(method, obj))},
-               //{ "G", (id, translations) => CreateContributorType(id, translations)},
-               //{ "M", (id, translations) => CreateContributorType(id, translations)},
+            { "G",  (method, obj) => Genre.Preview(ToViewModel<GenreViewModel>(method, obj))},
+            { "M",  (method, obj) => Movie.Preview(ToViewModel<MovieViewModel>(method, obj))},
         };
 
         public static T GetRecordForUpdate<T>(string entity) where T : class
@@ -165,6 +165,37 @@ namespace Application.Interations
             });
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.DarkYellow;
+        }
+
+        public static List<DetailsViewModel> ControlTranslations(List<DetailsViewModel> details, bool isNew, ref bool edit)
+        {
+            string input = (isNew) ? Yes : GetYesOrNoAnswer("Do you like to add or modify translations?");
+            if (input == Yes)
+            {
+                Translation.CreateOrUpdateTranslations(details);
+                edit = true;
+            }
+            return details;
+        }
+
+        public static List<Guid> ControlRelationships(List<Guid> relationships, string entity, ref bool edit)
+        {
+            string input = GetYesOrNoAnswer("Do you like to add or modify " + entity + " relashionships?");
+            if (input == Yes)
+            {
+                edit = true;
+                if (relationships.Count() > 0)
+                {
+                    Console.WriteLine("There are already a couple of " + entity + " relashionships");
+
+                    input = Common.GetYesOrNoAnswer("You may want to preview them, isn't it?");
+                    if (input == Common.Yes)
+                        Common.Preview(relationships, entity);
+                }
+
+                Common.HandleRelationShips(relationships, entity);
+            }
+            return relationships;
         }
 
         public static void HandleRelationShips(List<Guid> relationships, string entity)

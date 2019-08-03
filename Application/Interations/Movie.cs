@@ -6,42 +6,43 @@ using System.Text;
 
 namespace Application.Interations
 {
-    public class Contributor
+    public class Movie
     {
-        public static ContributorViewModel Create()
+        public static MovieViewModel Create()
         {
             Console.Clear();
-            Console.WriteLine("Let's handle a contributor! \n");
+            Console.WriteLine("Let's handle a Movie! \n");
 
-            ContributorViewModel model = new ContributorViewModel();
+            MovieViewModel model = new MovieViewModel();
 
-            Console.WriteLine("All we need for creating a contributor is to give us some details!");
-            ContributorOptions(ref model, true);
+            Console.WriteLine("All we need for creating a Movie is to give us some details!");
+            MovieOptions(ref model, true);
 
             return model;
         }
 
-        public static ContributorViewModel Update()
+        public static MovieViewModel Update()
         {
             Console.Clear();
-            Console.WriteLine("Let's handle a contributor! \n");
+            Console.WriteLine("Let's handle a Movie! \n");
 
-            ContributorViewModel model = Common.GetRecordForUpdate<ContributorViewModel>("C");
+            MovieViewModel model = Common.GetRecordForUpdate<MovieViewModel>("M");
             if (model == null)
                 return null;
 
             Console.WriteLine("Okey, we are ready!");
-            ContributorOptions(ref model, false);
+            MovieOptions(ref model, false);
 
             return model;
         }
 
-        private static void ContributorOptions(ref ContributorViewModel model, bool isNew)
+        private static void MovieOptions(ref MovieViewModel model, bool isNew)
         {
             bool edit = false;
 
             model.Details = Common.ControlTranslations(model.Details, isNew, ref edit);
-            model.ContributorTypes = Common.ControlRelationships(model.ContributorTypes, "Contributor Type", ref edit);
+            model.Genres = Common.ControlRelationships(model.Genres, "Genre", ref edit);
+            model.Contributors = Common.ControlRelationships(model.Contributors, "Contributor", ref edit);
 
             if (!edit)
             {
@@ -50,22 +51,24 @@ namespace Application.Interations
             }
         }
 
-        public static void Preview(List<ContributorViewModel> Contributors)
+        public static void Preview(List<MovieViewModel> Movies)
         {
             Console.WriteLine("\nLet's see how api responsed back!");
 
             int i = 1;
-            foreach (var c in Contributors)
+            foreach (var c in Movies)
             {
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.WriteLine("Contributor: ");
+                Console.WriteLine("Movie: ");
                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
                 Console.WriteLine(String.Format("{0,-10} | {1,-10}", i + ". ", c.ID));
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
 
                 Translation.Preview(c.Details);
 
-                Common.Preview(c.ContributorTypes, "Contributor Types");
+                Common.Preview(c.Genres, "Genres");
+                Common.Preview(c.Contributors, "Contributors");
+
                 Console.WriteLine("");
                 i++;
             }

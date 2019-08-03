@@ -80,6 +80,7 @@ namespace WebAPI.Extensions
             m.ID = id;
             m.Translations = model.Details.Select(x => x.ToTranslation(id, entityType_Movie, m.Translations?.SingleOrDefault(y => y.ID == x.ID))).ToList();
             m.MovieContributors = model.Contributors.Distinct().Select(x => x.ToMovieContributors(id)).ToList();
+            m.MovieGenres = model.Genres.Distinct().Select(x => x.ToMovieGenres(id)).ToList();
 
             return m;
         }
@@ -112,10 +113,19 @@ namespace WebAPI.Extensions
             return mc;
         }
 
+        public static MovieGenres ToMovieGenres(this Guid genreId, Guid movieId, MovieGenres mg = null)
+        {
+            if (mg == null)
+            {
+                mg = new MovieGenres();
+                mg.ID = Guid.NewGuid();
+            }
 
+            mg.GenreID = genreId;
+            mg.MovieID = movieId;
 
-
-
+            return mg;
+        }
 
         public static ContributorTypeViewModel ToContributorTypeViewModel(this ContributorType model)
         {

@@ -7,37 +7,37 @@ using System.Text;
 
 namespace Application.Interations
 {
-    public static class ContributorType
+    public static class Genre
     {
-        public static ContributorTypeViewModel Create()
+        public static GenreViewModel Create()
         {
             Console.Clear();
-            Console.WriteLine("Let's handle a contributor type! \n");
+            Console.WriteLine("Let's handle a movie gerne! \n");
 
-            ContributorTypeViewModel model = new ContributorTypeViewModel();
+            GenreViewModel model = new GenreViewModel();
 
-            Console.WriteLine("All we need for creating a contributor type is to give us some details! In some languages!");
-            ContributorTypeOptions(ref model, true);
+            Console.WriteLine("All we need for creating a movie gerne is to give us some details! In some languages!");
+            GenreOptions(ref model, true);
 
             return model;
         }
 
-        public static ContributorTypeViewModel Update()
+        public static GenreViewModel Update()
         {
             Console.Clear();
-            Console.WriteLine("Let's handle a contributor type! \n");
+            Console.WriteLine("Let's handle a movie genre! \n");
 
-            ContributorTypeViewModel model = Common.GetRecordForUpdate<ContributorTypeViewModel>("CT");
+            GenreViewModel model = Common.GetRecordForUpdate<GenreViewModel>("G");
             if (model == null)
                 return null;
 
             Console.WriteLine("Okey, we are ready!");
-            ContributorTypeOptions(ref model, false);
+            GenreOptions(ref model, false);
 
             return model;
         }
 
-        private static void ContributorTypeOptions(ref ContributorTypeViewModel model, bool isNew)
+        private static void GenreOptions(ref GenreViewModel model, bool isNew)
         {
             bool edit = false;
             model.Details = Common.ControlTranslations(model.Details, isNew, ref edit);
@@ -49,20 +49,20 @@ namespace Application.Interations
             }
         }
 
-        public static void Preview(List<ContributorTypeViewModel> contributorTypes)
+        public static void Preview(List<GenreViewModel> Genres)
         {
             Console.WriteLine("\nLet's see how api responsed back!");
 
             int i = 1;
-            foreach (var ct in contributorTypes)
+            foreach (var g in Genres)
             {
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.WriteLine("Contributor Type: ");
+                Console.WriteLine("Genre: ");
                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                Console.WriteLine(String.Format("{0,-10} | {1,-10}", i + ". ", ct.ID));
+                Console.WriteLine(String.Format("{0,-10} | {1,-10}", i + ". ", g.ID));
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
 
-                Translation.Preview(ct.Details);
+                Translation.Preview(g.Details);
                 Console.WriteLine("");
                 i++;
             }

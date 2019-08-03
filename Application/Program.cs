@@ -11,53 +11,35 @@ using System.Threading.Tasks;
 
 namespace Application
 {
-    class Program
+    internal class Program
     {
         private static string terminateKeyword = "EXIT";
-        static void Main(string[] args)
+
+        private static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-
-            var actionsWithBody = new List<string> { "POST", "PUT" };
-            var actionsWithId = new List<string> { "DELETE", "GETID", "GET" };
-            var methodWithResponse = new List<string> { "POST", "GETID", "GET" };
 
             MakeIntroduction();
 
             var read = Common.GetUserInput();
-            while (read != terminateKeyword)
+            while (read.ToUpper() != terminateKeyword)
             {
                 var commands = GetCommand(read);
-                var entity = commands[0];
-                var action = commands[1];
+                UserAction action = new UserAction(commands[1], commands[0]);
 
-                RestRequest request = new RestRequest();
-                var method = GetMethod[action];
-
-                if (actionsWithBody.Contains(action))
+                RestRequest request = API.PrepareRequest(action);
+                if (request != null)
                 {
-                    object body = GetEntity(method, entity);
-                    request = APICall.CreateRequest(method, body);
+                    IRestResponse resp = API.GetResponse(action, request);
+                    if (resp != null)
+                        Common.ShowResult[action.Entity](action.Method, resp);
                 }
-                else
-                {
-                    string id = null;
-                    request = APICall.CreateRequest(method, id);
-                }
-
-                var restResp = APICall.CallAPI(request, GetController[entity]);
-
-                APICall.IsAnticipatedResponse(restResp);
-
-                if (methodWithResponse.Contains(action))
-                    ShowResult[entity](method, restResp);
-                else
-                    Console.WriteLine("Changes uploaded successfully!");
-
 
                 Console.WriteLine(@"Let's execute a new action now! Remember: You can use keyword " + terminateKeyword + " to complete the demostration!");
                 read = Common.GetUserInput();
             }
+
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         private static void MakeIntroduction()
@@ -90,7 +72,7 @@ namespace Application
             while (!isValid)
             {
                 commands = input.ToUpper().Split(" ");
-                if (commands.Count() == 2 && GetMethod.ContainsKey(commands[1]) && GetPostEntity.ContainsKey(commands[0]))
+                if (commands.Count() == 2 && API.GetMethod.ContainsKey(commands[1]) && Common.GetPostEntity.ContainsKey(commands[0]))
                     isValid = true;
                 else
                 {
@@ -99,59 +81,6 @@ namespace Application
                 }
             }
             return commands;
-        }
-
-        private static Dictionary<string, Func<object>> GetPostEntity = new Dictionary<string, Func<object>>
-        {
-            { "CT", () => {  return ContributorType.CreateContributorType();  } },
-            //{ "C", (object) => CreateContributorType(id, translations)},
-            //{ "G", (id, translations) => CreateContributorType(id, translations)},
-            //{ "M", (id, translations) => CreateContributorType(id, translations)},
-        };
-
-        private static Dictionary<string, Action<object>> GetPutEntity = new Dictionary<string, Action<object>>
-        {
-            { "CT", (obj) => ContributorType.CreateContributorType()},
-               //{ "C", (object) => CreateContributorType(id, translations)},
-               //{ "G", (id, translations) => CreateContributorType(id, translations)},
-               //{ "M", (id, translations) => CreateContributorType(id, translations)},
-           };
-
-        private static Dictionary<string, Action<Method, IRestResponse>> ShowResult = new Dictionary<string, Action<Method, IRestResponse>>
-        {
-            { "CT", (method, restResp) => ContributorType.PreviewResponse(method, restResp)},
-               //{ "C", (object) => CreateContributorType(id, translations)},
-               //{ "G", (id, translations) => CreateContributorType(id, translations)},
-               //{ "M", (id, translations) => CreateContributorType(id, translations)},
-           };
-
-        private static Dictionary<string, string> GetController = new Dictionary<string, string>
-        {
-            { "CT", "ContributorTypes" },
-            { "C", "Contributors" },
-            { "G", "Genres" },
-            { "M", "Movies" }
-        };
-
-        private static Dictionary<string, Method> GetMethod = new Dictionary<string, Method>
-        {
-            { "GET", Method.GET },
-            { "GETID", Method.GET },
-            { "POST", Method.POST },
-            { "PUT", Method.PUT },
-            { "DELETE", Method.DELETE }
-        };
-
-        private static object GetEntity(Method method, string entity)
-        {
-            object obj;
-
-            if (method == Method.POST)
-                obj = GetPostEntity[entity]();
-            else
-                obj = GetPutEntity[entity];
-
-            return obj;
         }
     }
 }

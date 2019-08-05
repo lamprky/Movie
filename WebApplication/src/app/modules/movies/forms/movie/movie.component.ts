@@ -22,9 +22,6 @@ export class MovieComponent implements OnInit {
     genres: [],
   };
 
-  public animating: boolean;
-  public current_fs: FormControl; next_fs: FormControl; previous_fs: FormControl;
-
   public detailsAreVisible:boolean = true;
   public contributorsAreVisible:boolean = false;
   public genresAreVisible:boolean = false;
@@ -34,14 +31,6 @@ export class MovieComponent implements OnInit {
       this.movieDataService.getMovie(this.id).subscribe(
         movie => {
           this.movie = movie;
-          // movie.details.forEach(x => {
-          //   const res: GridDetails = {
-          //     ...x,
-          //     checked: false,
-          //   };
-          //   this.translations.push(res);
-          // });
-          //todo
         },
         error => {
           alert('Cannot retrieve data');

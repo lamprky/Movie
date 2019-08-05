@@ -42,7 +42,7 @@ export class TranslationsComponent implements OnInit, OnChanges {
       title: new FormControl('', Validators.required),
       name: new FormControl('', Validators.required),
       description: new FormControl('', Validators.required),
-      languageId: new FormControl('', Validators.required),
+      languageId: new FormControl(null, Validators.required),
     });
   }
 

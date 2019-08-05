@@ -1,0 +1,36 @@
+<app-grid [(items)]="translations"></app-grid>
+
+<div>
+    <form [formGroup]="form" class="form" (ngSubmit)="onSubmit()" [class.was-validated]="form.invalid && form.dirty">
+
+        <label class="form-control-label">Title</label>
+        <input formControlName="title" type="text" name="title">
+        <small *ngIf="form.controls['title'].errors?.required && form.controls['title'].dirty">
+            Field is required
+        </small>
+
+        <label class="form-control-label">Name</label>
+        <input formControlName="name" type="text" name="name">
+        <small *ngIf="form.controls['name'].errors?.required && form.controls['name'].dirty">
+            Field is required
+        </small>
+
+        <label class="form-control-label">Description</label>
+        <input formControlName="description" type="text" name="description">
+        <small *ngIf="form.controls['description'].errors?.required && form.controls['description'].dirty">
+            Field is required
+        </small>
+
+        <label class="form-control-label">Language</label>
+        <select formControlName="languageId" class="form-control" name="languageId">
+            <option [ngValue]="null">Select</option>
+            <option *ngFor="let language of languageOptions" [ngValue]="language.key">
+                {{language.value}}
+            </option>
+        </select>
+        <small *ngIf="form.controls['languageId'].dirty && form.controls['languageId'].errors?.required" >
+            Field is required
+        </small>
+        <button class="btn btn-link" type="submit" [disabled]="!canSubmitForm(form)" >Add</button>
+    </form>
+</div>

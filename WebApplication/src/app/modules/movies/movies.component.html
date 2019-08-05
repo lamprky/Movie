@@ -1,0 +1,6 @@
+<div class="container">
+<h3>Movies List</h3>
+</div>
+
+<app-grid-actions (delete)="onDelete()"></app-grid-actions>
+<app-grid [items]="movies | detailsMap"></app-grid>

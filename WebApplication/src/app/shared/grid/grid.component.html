@@ -1,0 +1,39 @@
+<div class="container">
+  <!--<br-advanced-search (searchClicked)="onSearchClicked($event)"></br-advanced-search>-->
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col"><input type="checkbox" (change)="checkAllItems(isChecked ? true : false)" [(ngModel)]="isChecked"></th>
+        <th scope="col">#</th>
+        <th scope="col" (click)="sortBy('name')">Title
+          <i [class]="getOrderClass('name')"></i>
+        </th>
+        <th scope="col" (click)="sortBy('title')">Name
+          <i [class]="getOrderClass('title')"></i>
+        </th>
+        <th scope="col" (click)="sortBy('description')">Description
+          <i [class]="getOrderClass('description') "></i>
+        </th>
+        <th scope="col " (click)="sortBy('languageId') ">Language
+          <i [class]="getOrderClass('languageId') "></i>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let item of items; let i=index ">
+        <tr [class]="item.checked ? 'selected' : '' ">
+          <td><input type="checkbox" [(ngModel)]=item.checked></td>
+          <td>{{i + 1}}.</td>
+          <td>{{item.title}}</td>
+          <td>{{item.name}}</td>
+          <td>{{item.description}}</td>
+          <td>{{item.languageId | keyValue: formOptionsService.getLanguageOptions()}}</td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <div style="margin-bottom: 50px">
+  </div>
+</div>
